@@ -1,0 +1,153 @@
+@page "/cart"
+@using EShopApp.Models
+@using EShopApp.Services
+@inject CartService CartService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<div class="cart-container">
+    <div class="cart-header">
+        <button class="back-button" @onclick="GoBack">← Back to Shopping</button>
+        <h1>Shopping Cart</h1>
+        @if (AuthService.IsLoggedIn)
+        {
+            <div class="user-info">Welcome, @AuthService.CurrentUser!</div>
+        }
+    </div>
+
+    @if (cartItems.Any())
+    {
+        <div class="cart-content">
+            <div class="cart-items">
+                @foreach (var item in cartItems)
+                {
+                    <div class="cart-item">
+                        <div class="item-image">
+                            <img src="@item.ImageUrl" alt="@item.ProductName" />
+                        </div>
+                        
+                        <div class="item-details">
+                            <h3>@item.ProductName</h3>
+                            <p class="item-price">$@item.Price.ToString("F2")</p>
+                        </div>
+                        
+                        <div class="item-quantity">
+                            <button class="qty-btn" @onclick="() => DecreaseQuantity(item.ProductId)">-</button>
+                            <span class="quantity">@item.Quantity</span>
+                            <button class="qty-btn" @onclick="() => IncreaseQuantity(item.ProductId)">+</button>
+                        </div>
+                        
+                        <div class="item-total">
+                            <span class="total-price">$@item.TotalPrice.ToString("F2")</span>
+                            <button class="remove-btn" @onclick="() => RemoveItem(item.ProductId)" title="Remove item">🗑️</button>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Total Items:</span>
+                    <span>@totalItems</span>
+                </div>
+                <div class="summary-row total-row">
+                    <span>Total Amount:</span>
+                    <span class="total-amount">$@totalAmount.ToString("F2")</span>
+                </div>
+                <button class="checkout-btn" @onclick="Checkout">Proceed to Checkout</button>
+                <button class="clear-cart-btn" @onclick="ClearCart">Clear Cart</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2>Your cart is empty</h2>
+            <p>Add some items to your cart to see them here.</p>
+            <button class="continue-shopping-btn" @onclick="GoBack">Continue Shopping</button>
+        </div>
+    }
+</div>
+
+@code {
+    private List<CartItem> cartItems = new();
+    private int totalItems = 0;
+    private decimal totalAmount = 0;
+
+    protected override void OnInitialized()
+    {
+        LoadCartData();
+        CartService.CartChanged += OnCartChanged;
+    }
+
+    private void LoadCartData()
+    {
+        cartItems = CartService.GetCartItems();
+        totalItems = CartService.GetCartItemCount();
+        totalAmount = CartService.GetCartTotal();
+    }
+
+    private void OnCartChanged()
+    {
+        LoadCartData();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void IncreaseQuantity(int productId)
+    {
+        var item = cartItems.FirstOrDefault(x => x.ProductId == productId);
+        if (item != null)
+        {
+            CartService.UpdateQuantity(productId, item.Quantity + 1);
+        }
+    }
+
+    private void DecreaseQuantity(int productId)
+    {
+        var item = cartItems.FirstOrDefault(x => x.ProductId == productId);
+        if (item != null && item.Quantity > 1)
+        {
+            CartService.UpdateQuantity(productId, item.Quantity - 1);
+        }
+    }
+
+    private void RemoveItem(int productId)
+    {
+        CartService.RemoveFromCart(productId);
+    }
+
+    private async Task ClearCart()
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to clear your cart?");
+        if (confirmed)
+        {
+            CartService.ClearCart();
+        }
+    }
+
+    private async Task Checkout()
+    {
+        if (!AuthService.IsLoggedIn)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Please login before checkout.");
+            return;
+        }
+
+        await JSRuntime.InvokeVoidAsync("alert", $"Thank you for your order, {AuthService.CurrentUser}! Total: ${totalAmount:F2}");
+        CartService.ClearCart();
+        Navigation.NavigateTo("/");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        CartService.CartChanged -= OnCartChanged;
+    }
+}
