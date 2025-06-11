@@ -1,0 +1,8 @@
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.AssemblyInfoInputs.cache
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.AssemblyInfo.cs
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.csproj.CoreCompileInputs.cache
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.MvcApplicationPartsAssemblyInfo.cache
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.RazorAssemblyInfo.cache
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.RazorAssemblyInfo.cs
+/home/runner/work/AppFromImage/AppFromImage/obj/Debug/net8.0/EShopApp.sourcelink.json
