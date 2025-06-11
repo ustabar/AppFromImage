@@ -1,6 +1,7 @@
 @page "/"
 @using EShopApp.Models
 @using EShopApp.Services
+@using Microsoft.AspNetCore.Components.Web
 @inject ProductService ProductService
 @inject CartService CartService
 @inject AuthService AuthService
@@ -40,6 +41,7 @@
     </div>
     
     <div class="hero-text">
+        <h2>Merhaba</h2>
         <h1>Ready for a new adventure?</h1>
         <p>Start the season with the latest in clothing and equipment.</p>
     </div>
@@ -56,12 +58,12 @@
             <div class="login-form">
                 <div class="form-group">
                     <label>User:</label>
-                    <input type="text" @bind="username" @onkeypress="@((e) => { if (e.Key == \"Enter\") HandleLogin(); })" placeholder="Enter username" />
+                    <input type="text" @bind="username" @onkeypress="OnUsernameKeyPress" placeholder="Enter username" />
                 </div>
                 
                 <div class="form-group">
                     <label>Password:</label>
-                    <input type="password" @bind="password" @onkeypress="@((e) => { if (e.Key == \"Enter\") HandleLogin(); })" placeholder="Enter password" />
+                    <input type="password" @bind="password" @onkeypress="OnPasswordKeyPress" placeholder="Enter password" />
                 </div>
                 
                 @if (!string.IsNullOrEmpty(errorMessage))
@@ -185,6 +187,22 @@
     private void ToggleFilters()
     {
         showFilters = !showFilters;
+    }
+
+    private async Task OnUsernameKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleLogin();
+        }
+    }
+
+    private async Task OnPasswordKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await HandleLogin();
+        }
     }
 
     public void Dispose()
