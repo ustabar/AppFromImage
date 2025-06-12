@@ -1,0 +1,69 @@
+@page "/login"
+@using EShopApp.Models
+@using EShopApp.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="login-container">
+    <div class="login-form-wrapper">
+        <div class="login-header">
+            <h3>Login</h3>
+        </div>
+        <div class="login-form">
+            <div class="form-group">
+                <label>User:</label>
+                <input type="text" @bind="loginModel.Username" placeholder="Enter username" />
+            </div>
+            
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" @bind="loginModel.Password" placeholder="Enter password" />
+            </div>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+            
+            <div class="form-actions">
+                <button class="btn btn-primary" @onclick="HandleLogin">Login</button>
+                <button class="btn btn-secondary" @onclick="NavigateToHome">Cancel</button>
+                <button class="btn btn-outline" @onclick="ClearForm">Clear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = "";
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(loginModel.Username))
+        {
+            errorMessage = "Please enter a username";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(loginModel.Password))
+        {
+            errorMessage = "Please enter a password";
+            return;
+        }
+
+        await AuthService.LoginAsync(loginModel.Username);
+        Navigation.NavigateTo("/");
+    }
+
+    private void NavigateToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void ClearForm()
+    {
+        loginModel.Username = string.Empty;
+        loginModel.Password = string.Empty;
+    }
+}

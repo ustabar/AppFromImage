@@ -26,7 +26,7 @@
                 }
                 else
                 {
-                    <span class="user-icon" @onclick="ShowLoginModal" title="Login">👤</span>
+                    <span class="user-icon" @onclick="NavigateToLogin" title="Login">👤</span>
                 }
                 <span class="cart-icon" @onclick="NavigateToCart" title="Shopping Cart">
                     🛒
@@ -45,38 +45,7 @@
     </div>
 </div>
 
-@if (showLoginNotification)
-{
-    <div class="login-notification-overlay" @onclick="CloseLoginModal">
-        <div class="login-notification" @onclick:stopPropagation="true">
-            <div class="login-header">
-                <h3>Login</h3>
-                <span class="close-btn" @onclick="CloseLoginModal">✕</span>
-            </div>
-            <div class="login-form">
-                <div class="form-group">
-                    <label>User:</label>
-                    <input type="text" @bind="username" placeholder="Enter username" />
-                </div>
-                
-                <div class="form-group">
-                    <label>Password:</label>
-                    <input type="password" @bind="password" placeholder="Enter password" />
-                </div>
-                
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="error-message">@errorMessage</div>
-                }
-                
-                <div class="form-actions">
-                    <button class="btn btn-primary" @onclick="HandleLogin">Login</button>
-                    <button class="btn btn-secondary" @onclick="CloseLoginModal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+
 
 <div class="main-content">
     <div class="products-grid">
@@ -99,10 +68,6 @@
     private List<string> brands = new();
     private List<string> types = new();
     
-    private bool showLoginNotification = false;
-    private string username = "";
-    private string password = "";
-    private string errorMessage = "";
     private int cartItemCount = 0;
     
     private string selectedBrand = "All";
@@ -133,38 +98,9 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private void ShowLoginModal()
+    private void NavigateToLogin()
     {
-        showLoginNotification = true;
-        username = "";
-        password = "";
-        errorMessage = "";
-    }
-
-    private void CloseLoginModal()
-    {
-        showLoginNotification = false;
-        username = "";
-        password = "";
-        errorMessage = "";
-    }
-
-    private async Task HandleLogin()
-    {
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            errorMessage = "Please enter a username";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            errorMessage = "Please enter a password";
-            return;
-        }
-
-        await AuthService.LoginAsync(username);
-        CloseLoginModal();
+        Navigation.NavigateTo("/login");
     }
 
     private async Task Logout()
