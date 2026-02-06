@@ -1,4 +1,4 @@
-# AppFromImage
+# AppFromImage for Baris
 
 A Blazor Server-side e-commerce application for outdoor gear and equipment.
 
